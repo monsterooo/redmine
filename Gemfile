@@ -15,6 +15,10 @@ gem "nokogiri", "~> 1.10.0"
 gem "i18n", "~> 1.5.3"
 gem "rbpdf", "~> 1.19.6"
 
+gem 'byebug'
+gem "better_errors"
+gem "binding_of_caller"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :x64_mingw, :mswin]
 

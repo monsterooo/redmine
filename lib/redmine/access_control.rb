@@ -79,19 +79,29 @@ module Redmine
       def initialize
         @project_module = nil
       end
-
+      # 构建一个允许访问路径
+      # name symbal 指定访问路径的名称
+      # hash
+      # 如：{:timelog => [:index, :report, :show]}
+      # 它定义一个允许访问的controller和其action
+      # options 定义其访问的属性 
       def permission(name, hash, options={})
         @permissions ||= []
         options.merge!(:project_module => @project_module)
         @permissions << Permission.new(name, hash, options)
       end
 
+      # 给指定的模块设置一些访问权限
+      # map.project_module :news do |map|
+      #   map.permission :view_news, {:news => [:index, :show]}, :read => true
+      # end
       def project_module(name, options={})
         @project_module = name
-        yield self
+        yield self # self等于Mapper实例
         @project_module = nil
       end
 
+      # 返回映射后的权限
       def mapped_permissions
         @permissions
       end
@@ -100,6 +110,10 @@ module Redmine
     class Permission
       attr_reader :name, :actions, :project_module
 
+      # name Symbal 权限名称
+      # hash {:news => [:index, :show]} 一个hash代表controller和指定的action
+      # options 访问权限参数
+      # { :public => true/false, :require => :member/:loggedin, :read => true/false }
       def initialize(name, hash, options)
         @name = name
         @actions = []
@@ -107,6 +121,9 @@ module Redmine
         @require = options[:require]
         @read = options[:read] || false
         @project_module = options[:project_module]
+        # 收集权限列表到 @actions 中
+        # hash => {:timelog => [:new, :create]} to
+        # [ 'timelog/new', ''timelog/create ]
         hash.each do |controller, actions|
           if actions.is_a? Array
             @actions << actions.collect {|action| "#{controller}/#{action}"}
